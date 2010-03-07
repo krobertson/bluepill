@@ -274,6 +274,11 @@ module Bluepill
       self.unlink_pid # TODO: we only write the pid file if we daemonize, should we only unlink it if we daemonize?
       
       self.skip_ticks_for(stop_grace_time)
+
+      # check if children are still running and stop them
+      if monitor_children?
+        children.each { |child| child.stop_process if child.process_running?(true) }
+      end
     end
     
     def restart_process
